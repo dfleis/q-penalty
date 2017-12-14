@@ -1,0 +1,298 @@
+---
+title: "Regularized Regression"
+author: "David Fleischer"
+date: "Last Update `r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+We consider data $(X, Y)$, $X \in \mathbb R^{n\times p},\,Y \in \mathbb R^n$ such that the responses $Y$ are linearly related to predictors $X$ through coefficients $\beta \in \mathbb R^p$, i.e.
+\begin{equation*}
+  Y = X \beta + \epsilon
+\end{equation*}
+
+where $\epsilon \in \mathbb R^n$ is some (unobservable) random perturbation with zero mean, constant variance, and zero covariance
+\begin{align*}
+  \mathbb E\left[\epsilon\right] &= {\bf 0} \in \mathbb R^n \\
+  \text{Var}\left(\epsilon\right) &= \sigma^2 \mathbb I_p \in \mathbb R^{p\times p}, \quad \sigma^2 \in \mathbb R \\
+\end{align*}
+
+We wish to investigate problem of estimating the coefficients $\beta$ by the *regularized/penalized* regression estimates $\hat{\beta}^{(q)}$ given by
+\begin{equation}\label{eqn:constr_optim}
+  \hat{\beta}^{(q)} =  \underset{\beta}{\text{arg min}} \left\{ \frac{1}{2} \lVert Y - X\beta \rVert^2_2 \right\}, \quad \lVert \beta \rVert^q_q \leq t^q,\quad t > 0
+\end{equation}
+
+where $\lVert x \rVert^q_q$, $x \in \mathbb R^r$, $q > 0$, is given by
+\begin{equation*}
+  \lVert x \rVert^q_q = \sum^r_{j = 1} \left| x_j \right|^q 
+\end{equation*}
+
+For $q > 1$ this quantity is the $\ell_q$ norm, while for $q \in (0, 1)$ this quantity is *not* considered a norm as a consequence of failing the triangle inequality. We simplify our objective function in (\ref{eqn:constr_optim}) by
+\begin{align*}
+   \underset{\beta}{\text{arg min}} \left\{ \frac{1}{2} \lVert Y - X\beta \rVert^2_2 \right\} &=  \underset{\beta}{\text{arg min}} \left\{ \frac{1}{2} \lVert Y - X \beta \rVert^2_2 \right\} \\
+  &\equiv  \underset{\beta}{\text{arg min}} \left\{  \frac{1}{2} \left(Y - X \beta \right)^T \left(Y - X \beta \right) \right\} \\
+  &=  \underset{\beta}{\text{arg min}} \left\{  \frac{1}{2} Y^T Y - \beta^T X^T Y + \frac{1}{2}\beta^T X^T X \beta \right\} \\
+  &= \underset{\beta}{\text{arg min}} \left\{ - \beta^T X^T Y + \frac{1}{2}\beta^T X^T X \beta \right\}
+\end{align*}
+
+As an initial assumption we suppose our predictors are orthogonal $X^T X = \mathbb I_p$, yielding $\hat{\beta}^\text{OLS} = X^T Y$. Therefore, we may yet again simplify (\ref{eqn:constr_optim}) by
+\begin{align*}
+  \underset{\beta}{\text{arg min}} \left\{ \frac{1}{2} \lVert Y - X\beta \rVert^2_2 \right\} &= \underset{\beta}{\text{arg min}} \left\{ - \beta^T X^T Y + \frac{1}{2}\beta^T X^T X \beta \right\} \\
+ &= \underset{\beta}{\text{arg min}} \left\{ - \beta^T \beta^\text{OLS} + \frac{1}{2}\beta^T \beta \right\}
+\end{align*}
+
+and so we restate our constrained optimization problem (\ref{eqn:constr_optim}) as
+\begin{equation}\label{eqn:constr_optim2}
+  \hat{\beta}^{(q)} = \underset{\beta}{\text{arg min}} \left\{ - \beta^T \beta^\text{OLS} + \frac{1}{2}\beta^T \beta \right\}, \quad \lVert \beta \rVert^q_q \leq t^q,\quad t > 0
+\end{equation}
+
+Our objective function in (\ref{eqn:constr_optim2}) defines concentric ellipsoids in $\mathbb R^p$ centered at $\hat{\beta}^\text{OLS}$ while our constraint defines "norms"[^1] in $\mathbb R^p$. For example, when $p = 2$ we may easily visualize our optimization problem as finding the values of $\hat{\beta}$ closest to the center of the ellipsoids $\hat{\beta}^\text{OLS}$ such that the pair $(\hat{\beta}_1, \hat{\beta}_2)$ is in the region defined by the $q$-penalty:
+
+```{r, fig.height = 3.5, fig.width = 3, fig.align = 'center', fig.show = 'hold', echo = F}
+mycols <- c(rgb(1, 1, 1, 0), rgb(0, 0, 1, 0.15))
+
+beta_ols1 <- 1/2
+beta_ols2 <- 0.75
+beta1 <- seq(-1, 1, length.out = 250); beta1_w <- seq(min(beta1)*1.2, max(beta1)*1.2, length.out = 250)
+beta2 <- seq(-1, 1, length.out = 250); beta2_w <- seq(min(beta2)*1.2, max(beta2)*1.2, length.out = 250)
+
+obj_fxn <- function(x, y, a, b) -(x * a + y * b) + 1/2 * (x^2 + y^2)
+norm_q <- function(x, y, q) outer(x, y, function(x, y) (abs(x)^q + abs(y)^q)^(1/q))
+loss_ols <- outer(beta1_w, beta2_w, function(x, y) obj_fxn(x, y, beta_ols1, beta_ols2))
+
+
+##### VARYING Q #####
+tplot <- 1
+
+### q = 0.5
+q <- 0.5
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        ylab = expression(beta[2]),
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1, beta2, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot, arr.ind = T)] <- 0
+image(beta1, beta2, NQ_k, col = mycols, add = T)
+
+### q = 1
+q <- 1
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1, beta2, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot, arr.ind = T)] <- 0
+image(beta1, beta2, NQ_k, col = mycols, add = T)
+
+### q = 2
+q <- 2
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1, beta2, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot, arr.ind = T)] <- 0
+image(beta1, beta2, NQ_k, col = mycols, add = T)
+```
+
+```{r, fig.height = 3.5, fig.width = 3, fig.align = 'center', fig.show = 'hold', echo = F}
+##### VARYING T #####
+q <- 0.5
+
+### t = 3
+tplot <- 3
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        ylab = expression(beta[2]),
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1_w, beta2_w, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot^q, arr.ind = T)] <- 0
+image(beta1_w, beta2_w, NQ_k, col = mycols, add = T)
+
+### t = 6
+tplot <- 6
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1_w, beta2_w, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot^q, arr.ind = T)] <- 0
+image(beta1_w, beta2_w, NQ_k, col = mycols, add = T)
+
+### t = 9
+tplot <- 9
+contour(beta1_w, beta2_w, loss_ols, nlevels = 30, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(min(beta1), max(beta1)),
+        ylim = c(min(beta2), max(beta2)),
+        main = paste0("q = ", q, ", t = ", tplot))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+contour(beta1_w, beta2_w, norm_q(beta1_w, beta2_w, q), levels = tplot^q, 
+        drawlabels = F, add = T, col = "blue")
+
+NQ <- norm_q(beta1_w, beta2_w, q)
+NQ_k <- matrix(1, nrow = nrow(NQ), ncol = ncol(NQ))
+NQ_k[which(NQ > tplot^q, arr.ind = T)] <- 0
+image(beta1_w, beta2_w, NQ_k, col = mycols, add = T)
+```
+
+[^1]: If we permit the perversion of a norm to include the cases of $q \in (0, 1)$.
+
+We can visualize the paths that our estimates $\hat{\beta}^{(q)}$ take as $t$ varies
+
+```{r, fig.height = 3.5, fig.width = 3, fig.align = 'center', fig.show = 'hold', echo = F, message = F}
+library(alabama)
+mygrad <- colorRampPalette(c("gray80", "black"))
+
+# q values
+qs <- c(0.5, 1, 2)
+
+# values of k and lambda to compute our regularized estimates over
+tmin <- 0
+tmax <- 2
+ts <- seq(tmin, tmax, length.out = 40)
+
+beta_ols1 <- 1/2
+beta_ols2 <- 0.75
+beta1 <- seq(-1, 1, length.out = 250); beta1_w <- seq(min(beta1)*1.2, max(beta1)*1.2, length.out = 250)
+beta2 <- seq(-1, 1, length.out = 250); beta2_w <- seq(min(beta2)*1.2, max(beta2)*1.2, length.out = 250)
+
+##### define some functions ######
+obj_fxn <- function(x, y, beta1, beta2) -(x * beta1 + y * beta2) + 1/2 * (x^2 + y^2)
+obj_grad_fxn <- function(x, y, beta1, beta2) c(-beta1 + x, -beta2 + y)
+constr_fxn <- function(x, y, k, q) k - abs(x)^q - abs(y)^q # hin(x) >= 0
+
+##### DO WORK ######
+loss_constr_opt_list <- list()
+# baseline loss contours/surface
+loss_ols <- outer(beta1_w, beta2_w, function(x, y) obj_fxn(x, y, beta_ols1, beta_ols2))
+
+for (q_idx in 1:length(qs)) {
+  q <- qs[q_idx]
+  
+  ## constrained framework
+  # auglag: augmented lagragian algorithm
+  loss_constr_opt_ks <- sapply(ts, function(t)
+    alabama::auglag(par = c(0, 0), # start searach at (0, 0)
+                    fn  = function(params) obj_fxn(params[1], params[2], beta_ols1, beta_ols2),
+                    gr  = function(params) obj_grad_fxn(params[1], params[2], beta_ols1, beta_ols2),
+                    hin = function(params) constr_fxn(params[1], params[2], t, q),
+                    control.outer = list(maxeps = 1e-4, itmax = 1e4, trace = F))$par)
+  loss_constr_opt_list[[q_idx]] <- loss_constr_opt_ks
+}
+
+##### plots #####
+
+q_idx <- 1
+contour(beta1_w, beta2_w, loss_ols, nlevels = 55, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        ylab = expression(beta[2]),
+        xlim = c(max(0, min(beta1)), max(beta1)),
+        ylim = c(max(0, min(beta2)), max(beta2)),
+        main = substitute(paste(t %in% "[", tmin, ", ", tmax, "], q = ", q = myq),
+                          list(tmin = min(ts), tmax = max(ts), myq = qs[q_idx])))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+lines(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,])
+points(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,], 
+       cex = 0.5, pch = 19, col = mygrad(length(ts)))
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+
+q_idx <- 2
+contour(beta1_w, beta2_w, loss_ols, nlevels = 55, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(max(0, min(beta1)), max(beta1)),
+        ylim = c(max(0, min(beta2)), max(beta2)),
+        main = substitute(paste(t %in% "[", tmin, ", ", tmax, "], q = ", q = myq),
+                          list(tmin = min(ts), tmax = max(ts), myq = qs[q_idx])))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+lines(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,])
+points(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,], 
+       cex = 0.5, pch = 19, col = mygrad(length(ts)))
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+
+q_idx <- 3
+contour(beta1_w, beta2_w, loss_ols, nlevels = 55, drawlabels = F, col = 'gray70', lwd = 1,
+        xlab = expression(beta[1]),
+        yaxt = "n",
+        xlim = c(max(0, min(beta1)), max(beta1)),
+        ylim = c(max(0, min(beta2)), max(beta2)),
+        main = substitute(paste(t %in% "[", tmin, ", ", tmax, "], q = ", q = myq),
+                          list(tmin = min(ts), kmax = max(ts), myq = qs[q_idx])))
+abline(v = 0, col = 'gray70', lty = 'dashed')
+abline(h = 0, col = 'gray70', lty = 'dashed')
+lines(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,])
+points(loss_constr_opt_list[[q_idx]][2,] ~ loss_constr_opt_list[[q_idx]][1,], 
+       cex = 0.5, pch = 19, col = mygrad(length(ts)))
+points(beta_ols1, beta_ols2, pch = 19)
+text(beta_ols1 - 0.1, beta_ols2 + 0.05, label = expression(beta^OLS))
+```
+
+
+
+
+
+

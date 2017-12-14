@@ -1,0 +1,269 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     10550,        259]
+NotebookOptionsPosition[     10096,        240]
+NotebookOutlinePosition[     10452,        256]
+CellTagsIndexPosition[     10409,        253]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"f", "[", 
+     RowBox[{"x_", ",", "y_", ",", "a_", ",", "b_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"-", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"a", "*", "x"}], "+", 
+        RowBox[{"b", "*", "y"}]}], ")"}]}], "+", 
+     RowBox[{
+      RowBox[{"1", "/", "2"}], 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"x", "^", "2"}], "+", 
+        RowBox[{"y", "^", "2"}]}], ")"}]}]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"g0", "[", 
+     RowBox[{"x_", ",", "y_", ",", "q_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Abs", "[", "x", "]"}], "^", "q"}], "+", 
+     RowBox[{
+      RowBox[{"Abs", "[", "y", "]"}], "^", "q"}]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"g1", "[", 
+     RowBox[{"x_", ",", "y_", ",", "q_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"Abs", "[", 
+      RowBox[{"x", " ", "y"}], "]"}], "^", "q"}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"g2", "[", 
+     RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+    RowBox[{"Abs", "[", 
+     RowBox[{"x", " ", "y"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"g3", "[", 
+     RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+    RowBox[{"x", " ", "y"}]}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"xmin", "=", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], "*", 
+        RowBox[{"Abs", "[", "a", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"xmax", "=", 
+       RowBox[{"1.5", "*", 
+        RowBox[{"Abs", "[", "a", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"ymin", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"-", "0.2"}], "*", 
+        RowBox[{"Abs", "[", "b", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"ymax", "=", 
+       RowBox[{"1.5", "*", 
+        RowBox[{"Abs", "[", "b", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"pc", "=", 
+       RowBox[{"ContourPlot", "[", 
+        RowBox[{
+         RowBox[{"{", "\[IndentingNewLine]", 
+          RowBox[{"f", "[", 
+           RowBox[{"x", ",", "y", ",", "a", ",", "b"}], "]"}], 
+          "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "xmin", ",", "xmax"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"y", ",", "ymin", ",", "ymax"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"PlotLabel", "\[Rule]", 
+          RowBox[{"\"\<k = \>\"", "<>", 
+           RowBox[{"ToString", "[", "k", "]"}], "<>", "\"\<, q = \>\"", "<>", 
+           
+           RowBox[{"ToString", "[", "q", "]"}], "<>", "\"\<, a = \>\"", "<>", 
+           
+           RowBox[{"ToString", "[", "a", "]"}], "<>", "\"\<, b = \>\"", "<>", 
+           
+           RowBox[{"ToString", "[", "b", "]"}]}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Contours", "\[Rule]", "10"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"ContourStyle", "\[Rule]", "Thick"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"ContourShading", "\[Rule]", "None"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Frame", "\[Rule]", "False"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Axes", "\[Rule]", "Automatic"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"Method", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"\"\<TransparentPolygonMesh\>\"", "\[Rule]", "True"}], 
+           "}"}]}]}], "\[IndentingNewLine]", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"pr0", "=", 
+       RowBox[{"RegionPlot", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"g0", "[", 
+           RowBox[{"x", ",", "y", ",", "q"}], "]"}], "\[LessEqual]", " ", 
+          "k"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"x", ",", "xmin", ",", "xmax"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"{", 
+          RowBox[{"y", ",", "ymin", ",", "ymax"}], "}"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"BoundaryStyle", "\[Rule]", "Blue"}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{"PlotStyle", "\[Rule]", 
+          RowBox[{"{", 
+           RowBox[{"Blue", ",", 
+            RowBox[{"Opacity", "[", "0.25", "]"}]}], "}"}]}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Show", "[", 
+       RowBox[{"pc", ",", "pr0", ",", "\[IndentingNewLine]", 
+        RowBox[{"Epilog", "\[Rule]", 
+         RowBox[{"{", "Point", "}"}]}]}], "]"}]}], "\[IndentingNewLine]", ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"q", ",", "1"}], "}"}], ",", "0", ",", "2", ",", "0.05"}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"k", ",", "1"}], "}"}], ",", "0", ",", "4"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "1"}], "}"}], ",", "0", ",", "4", ",", "0.1"}], 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"b", ",", "1"}], "}"}], ",", "0", ",", "4", ",", "0.1"}], 
+      "}"}]}], "]"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.7204827256056213`*^9, 3.720483304701809*^9}, {
+  3.720483436531104*^9, 3.720483476364764*^9}, {3.720483512710925*^9, 
+  3.720483597624069*^9}, {3.7204836345372057`*^9, 3.7204837353966627`*^9}, {
+  3.720483765807662*^9, 3.7204837746408157`*^9}, {3.720483812612145*^9, 
+  3.7204840879233093`*^9}, {3.720484126366743*^9, 
+  3.720484215319038*^9}},ExpressionUUID->"46debd28-9704-4ed9-b173-\
+eca6c9aa24a8"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`a$$ = 1, $CellContext`b$$ = 
+    1, $CellContext`k$$ = 1.6, $CellContext`q$$ = 1.35, Typeset`show$$ = True,
+     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`q$$], 1}, 0, 2, 0.05}, {{
+       Hold[$CellContext`k$$], 1}, 0, 4}, {{
+       Hold[$CellContext`a$$], 1}, 0, 4, 0.1}, {{
+       Hold[$CellContext`b$$], 1}, 0, 4, 0.1}}, Typeset`size$$ = {
+    360., {186., 190.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`q$92052$$ = 
+    0, $CellContext`k$92053$$ = 0, $CellContext`a$92054$$ = 
+    0, $CellContext`b$92055$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`a$$ = 1, $CellContext`b$$ = 
+        1, $CellContext`k$$ = 1, $CellContext`q$$ = 1}, "ControllerVariables" :> {
+        Hold[$CellContext`q$$, $CellContext`q$92052$$, 0], 
+        Hold[$CellContext`k$$, $CellContext`k$92053$$, 0], 
+        Hold[$CellContext`a$$, $CellContext`a$92054$$, 0], 
+        Hold[$CellContext`b$$, $CellContext`b$92055$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, 
+      "Body" :> ($CellContext`xmin = (-0.2) 
+         Abs[$CellContext`a$$]; $CellContext`xmax = 
+        1.5 Abs[$CellContext`a$$]; $CellContext`ymin = (-0.2) 
+         Abs[$CellContext`b$$]; $CellContext`ymax = 
+        1.5 Abs[$CellContext`b$$]; $CellContext`pc = ContourPlot[{
+           $CellContext`f[$CellContext`x, $CellContext`y, $CellContext`a$$, \
+$CellContext`b$$]}, {$CellContext`x, $CellContext`xmin, $CellContext`xmax}, \
+{$CellContext`y, $CellContext`ymin, $CellContext`ymax}, PlotLabel -> 
+          StringJoin["k = ", 
+            ToString[$CellContext`k$$], ", q = ", 
+            ToString[$CellContext`q$$], ", a = ", 
+            ToString[$CellContext`a$$], ", b = ", 
+            ToString[$CellContext`b$$]], Contours -> 10, ContourStyle -> 
+          Thick, ContourShading -> None, Frame -> False, Axes -> Automatic, 
+          Method -> {"TransparentPolygonMesh" -> True}]; $CellContext`pr0 = 
+        RegionPlot[$CellContext`g0[$CellContext`x, $CellContext`y, \
+$CellContext`q$$] <= $CellContext`k$$, {$CellContext`x, $CellContext`xmin, \
+$CellContext`xmax}, {$CellContext`y, $CellContext`ymin, $CellContext`ymax}, 
+          BoundaryStyle -> Blue, PlotStyle -> {Blue, 
+            Opacity[0.25]}]; Show[$CellContext`pc, $CellContext`pr0]), 
+      "Specifications" :> {{{$CellContext`q$$, 1}, 0, 2, 
+         0.05}, {{$CellContext`k$$, 1}, 0, 4}, {{$CellContext`a$$, 1}, 0, 4, 
+         0.1}, {{$CellContext`b$$, 1}, 0, 4, 0.1}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{405., {273., 279.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.7204839328808613`*^9, {3.720483980688404*^9, 3.720484019680993*^9}, {
+   3.720484067813744*^9, 3.720484088388075*^9}, {3.720484148130632*^9, 
+   3.720484193321719*^9}},ExpressionUUID->"262f05b3-6191-4fc9-b093-\
+c61a248996ab"]
+}, Open  ]]
+},
+WindowSize->{808, 755},
+WindowMargins->{{188, Automatic}, {Automatic, 40}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 27, \
+2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 5791, 145, 873, "Input", "ExpressionUUID" -> \
+"46debd28-9704-4ed9-b173-eca6c9aa24a8"],
+Cell[6374, 169, 3706, 68, 569, "Output", "ExpressionUUID" -> \
+"262f05b3-6191-4fc9-b093-c61a248996ab"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
