@@ -12,7 +12,6 @@
 # argmin ( -beta^T beta_ols + beta^T beta + lambda * sum^p_{j = 1} abs(beta_j)^q ), lambda > 0
 ###
 library(alabama)
-setwd("~/projects/q_penalty/")
 mygrad <- colorRampPalette(c("red", "black"))
 parula <- colorRampPalette(c(
   rgb(53,  42,  135, maxColorValue = 255),

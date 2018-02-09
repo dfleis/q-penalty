@@ -16,7 +16,7 @@ We consider data $(X, Y)$, $X \in \mathbb R^{n\times p},\,Y \in \mathbb R^n$ suc
   Y = X \beta + \epsilon
 \end{equation*}
 
-where $\epsilon \in \mathbb R^n$ is some (unobservable) random perturbation with zero mean, constant variance, and zero covariance
+where $\epsilon \in \mathbb R^n$ is some (unobservable) random perturbation with mean zero, constant variance, and zero covariance
 \begin{align*}
   \mathbb E\left[\epsilon\right] &= {\bf 0} \in \mathbb R^n \\
   \text{Var}\left(\epsilon\right) &= \sigma^2 \mathbb I_p \in \mathbb R^{p\times p}, \quad \sigma^2 \in \mathbb R \\
